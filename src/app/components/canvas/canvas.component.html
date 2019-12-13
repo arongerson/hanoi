@@ -1,0 +1,35 @@
+<style>
+    .canvas {
+        max-width: 60rem;
+        height: 30rem;
+        background-color: teal;
+        margin: 0 auto;
+        display: flex;
+        position: relative;
+    }
+
+    .pin-section {
+        height: 100%;
+        position: relative;
+        flex: 1;
+    }
+
+    .pin {
+        width: 10px;
+        height: 95%;
+        background-color: brown;
+        position: absolute;
+        bottom: 0;
+    }
+</style>
+<div class="canvas">
+    <div class="pin-section" id="secA">
+        <div class="pin" id="pinA"></div>
+    </div>
+    <div class="pin-section" id="secB">
+        <div class="pin" id="pinB"></div>
+    </div>
+    <div class="pin-section" id="secC">
+        <div class="pin" id="pinC"></div>
+    </div>
+</div>
