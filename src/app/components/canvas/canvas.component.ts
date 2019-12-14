@@ -30,7 +30,7 @@ export class CanvasComponent implements OnInit, AfterViewInit {
   sectionA: HTMLElement;
   sectionB: HTMLElement;
   sectionC: HTMLElement;
-  canvas: HTMLElement;
+  canvas: any;
 
   pinA: Pin;
   pinB: Pin;
@@ -71,6 +71,7 @@ export class CanvasComponent implements OnInit, AfterViewInit {
     this.updateWidth();
     this.updatePinPosition();
     this.createDisks();
+    this.addEventListeners();
   }
 
   createPins() {
@@ -102,53 +103,58 @@ export class CanvasComponent implements OnInit, AfterViewInit {
       this.canvas.appendChild(element);
       // update dimensions
       width -= diskWidthOffset;
-      // this.addEventListeners(element);
     }
-    this.addEventListeners();
+  }
+
+  mouseDown = (e) => {
+    if (this.isDisk(e.target)) {
+      this.element = e.target;
+      if (e.type === "touchstart") {
+        this.initialX = e.touches[0].clientX - parseFloat(this.element.getAttribute('diskOffsetX'));
+        this.initialY = e.touches[0].clientY - parseFloat(this.element.getAttribute('diskOffsetY'));
+      } else {
+        this.initialX = e.clientX - parseFloat(this.element.getAttribute('diskOffsetX'));
+        this.initialY = e.clientY - parseFloat(this.element.getAttribute('diskOffsetY'));
+      }
+      this.active = true;
+    }
+  }
+
+  mouseMove = (e) => {
+    if (this.active) {
+      e.preventDefault();
+      if (e.type === "touchmove") {
+        this.currentX = e.touches[0].clientX - this.initialX;
+        this.currentY = e.touches[0].clientY - this.initialY;
+      } else {
+        this.currentX = e.clientX - this.initialX;
+        this.currentY = e.clientY - this.initialY;
+      }
+
+      this.xOffset = this.currentX;
+      this.yOffset = this.currentY;
+      this.element.setAttribute('diskOffsetX', this.currentX.toString());
+      this.element.setAttribute('diskOffsetY', this.currentY.toString());
+      this.setTranslate(this.currentX, this.currentY, this.element);
+    }
+  }
+
+  mouseUp = (e) => {
+    this.active = false;
+    this.element = null;
+    this.initialX = this.currentX;
+    this.initialY = this.currentY;
   }
 
   addEventListeners() {
-    this.canvas.addEventListener('mousedown', (e) => {
-      if (this.isDisk(e.target)) {
-        this.element = e.target;
-        if (e.type === "touchstart") {
-          // this.initialX = e.touches[0].clientX - this.xOffset;
-          // this.initialY = e.touches[0].clientY - this.yOffset;
-        } else {
-          this.initialX = e.clientX - parseFloat(this.element.getAttribute('diskOffsetX'));
-          this.initialY = e.clientY - parseFloat(this.element.getAttribute('diskOffsetY'));
-        }
-        this.active = true;
-      }
-      console.log(e.clientX)
-    }, false);
-    this.canvas.addEventListener('mousemove', (e) => {
-      if (this.active) {
-        e.preventDefault();
-        if (e.type === "touchmove") {
-          // this.currentX = e.touches[0].clientX - this.initialX;
-          // this.currentY = e.touches[0].clientY - this.initialY;
-        } else {
-          this.currentX = e.clientX - this.initialX;
-          this.currentY = e.clientY - this.initialY;
-        }
-
-        this.xOffset = this.currentX;
-        this.yOffset = this.currentY;
-        this.element.setAttribute('diskOffsetX', this.currentX.toString());
-        this.element.setAttribute('diskOffsetY', this.currentY.toString());
-
-        this.setTranslate(this.currentX, this.currentY, this.element);
-      }
-    }, false);
-    this.canvas.addEventListener('mouseup', (e) => {
-      this.active = false;
-      this.element = null;
-      this.initialX = this.currentX;
-      this.initialY = this.currentY;
-      // this.xOffset = 0;
-      // this.yOffset = 0;
-    }, false);
+    // mouse listeners
+    this.canvas.addEventListener('mousedown', this.mouseDown, false);
+    this.canvas.addEventListener('mousemove', this.mouseMove, false);
+    this.canvas.addEventListener('mouseup', this.mouseUp, false);
+    // touch listeners
+    this.canvas.addEventListener('touchstart', this.mouseDown, false);
+    this.canvas.addEventListener('touchmove', this.mouseMove, false);
+    this.canvas.addEventListener('touchend', this.mouseUp, false);
   }
 
   setTranslate(xPos, yPos, element) {
