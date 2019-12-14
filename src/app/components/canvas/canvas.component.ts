@@ -1,5 +1,11 @@
 import { Component, OnInit, AfterViewInit, HostListener } from '@angular/core';
 
+const DESIRED_DISK_MIN_SIZE = 40;
+const DISK_MIN_SIZE = 20;
+const DESIRED_MIN_OFFSET = 20;
+const EXTRA_SMALL_OFFSET = 10;
+
+
 @Component({
   selector: 'app-canvas',
   templateUrl: './canvas.component.html',
@@ -51,7 +57,8 @@ export class CanvasComponent implements OnInit, AfterViewInit {
   }
 
   createDisks() {
-    let width = this.getInitialDiskWidth();
+    let width = this.sectionWidth;
+    let diskWidthOffset = this.getDiskWidthOffset();
     let height = 30;
     for (let i = 0; i < this.numberOfDisks; i++) {
       let disk = document.createElement('div');
@@ -65,17 +72,23 @@ export class CanvasComponent implements OnInit, AfterViewInit {
       this.disks.push(disk);
       this.sectionA.appendChild(disk);
       // update dimensions
-      width -= 20;
+      width -= diskWidthOffset;
     }
   }
 
-  getInitialDiskWidth() {
-    return this.sectionWidth - 40;
+  updateDiskWidth() {
+    let width = this.sectionWidth;
+    let diskWidthOffset = this.getDiskWidthOffset();
+    for (let disk of this.disks) {
+      disk.style.width = `${width}px`;
+      width -= diskWidthOffset;
+    }
   }
 
   updateWidth() {
     this. sectionWidth = this.sectionA.offsetWidth;
     this.pinWidth = this.pinA.offsetWidth;
+    this.updateDiskWidth();
   }
 
   updatePinPosition() {
@@ -86,6 +99,20 @@ export class CanvasComponent implements OnInit, AfterViewInit {
     for (let disk of this.disks) {
       disk.style.left = `${(this.sectionWidth - disk.offsetWidth)/ 2}px`;
     }
+  }
+
+  getDiskWidthOffset() {
+    let diskOffset = (this.sectionWidth - DESIRED_DISK_MIN_SIZE) / this.numberOfDisks;
+    if (diskOffset >= DESIRED_MIN_OFFSET) {
+      return diskOffset;
+    } else {
+      diskOffset = (this.sectionWidth - DISK_MIN_SIZE) / this.numberOfDisks;
+      if (diskOffset >= DESIRED_MIN_OFFSET) {
+        return diskOffset;
+      } else {
+        return EXTRA_SMALL_OFFSET;
+      }
+    } 
   }
 
   getElements() {
