@@ -5,6 +5,9 @@ const DESIRED_DISK_MIN_SIZE = 40;
 const DISK_MIN_SIZE = 20;
 const DESIRED_MIN_OFFSET = 20;
 const EXTRA_SMALL_OFFSET = 10;
+const INDEX_ATTRIBUTE = "index";
+const OFFSET_X_ATTR = 'offsetX';
+const OFFSET_Y_ATTR = 'offsetY';
 
 export interface Disk {
   index: number;
@@ -94,9 +97,9 @@ export class CanvasComponent implements OnInit, AfterViewInit {
       element.style.width = `${width}px`;
       element.style.backgroundColor = this.colors[i];
       element.style.border = 'solid 1px black';
-      element.setAttribute('diskIndex', i.toString());
-      element.setAttribute('diskOffsetX', '0');
-      element.setAttribute('diskOffsetY', '0');
+      element.setAttribute(INDEX_ATTRIBUTE, i.toString());
+      element.setAttribute(OFFSET_X_ATTR, '0');
+      element.setAttribute(OFFSET_Y_ATTR, '0');
       let disk = {index: i, element: element, pin: this.pinA};
       this.pinA.disks.push(disk);
       this.disks.push(disk);
@@ -107,14 +110,14 @@ export class CanvasComponent implements OnInit, AfterViewInit {
   }
 
   mouseDown = (e) => {
-    if (this.isDisk(e.target)) {
+    if (this.isDraggable(e.target)) {
       this.element = e.target;
       if (e.type === "touchstart") {
-        this.initialX = e.touches[0].clientX - parseFloat(this.element.getAttribute('diskOffsetX'));
-        this.initialY = e.touches[0].clientY - parseFloat(this.element.getAttribute('diskOffsetY'));
+        this.initialX = e.touches[0].clientX - parseFloat(this.element.getAttribute(OFFSET_X_ATTR));
+        this.initialY = e.touches[0].clientY - parseFloat(this.element.getAttribute(OFFSET_Y_ATTR));
       } else {
-        this.initialX = e.clientX - parseFloat(this.element.getAttribute('diskOffsetX'));
-        this.initialY = e.clientY - parseFloat(this.element.getAttribute('diskOffsetY'));
+        this.initialX = e.clientX - parseFloat(this.element.getAttribute(OFFSET_X_ATTR));
+        this.initialY = e.clientY - parseFloat(this.element.getAttribute(OFFSET_Y_ATTR));
       }
       this.active = true;
     }
@@ -133,8 +136,8 @@ export class CanvasComponent implements OnInit, AfterViewInit {
 
       this.xOffset = this.currentX;
       this.yOffset = this.currentY;
-      this.element.setAttribute('diskOffsetX', this.currentX.toString());
-      this.element.setAttribute('diskOffsetY', this.currentY.toString());
+      this.element.setAttribute(OFFSET_X_ATTR, this.currentX.toString());
+      this.element.setAttribute(OFFSET_Y_ATTR, this.currentY.toString());
       this.setTranslate(this.currentX, this.currentY, this.element);
     }
   }
@@ -165,10 +168,20 @@ export class CanvasComponent implements OnInit, AfterViewInit {
     }
   }
 
+  isDraggable(element) {
+    let index = parseInt(element.getAttribute(INDEX_ATTRIBUTE));
+    return this.isDisk(element) && this.isDiskOnTopOfStack(this.disks[index]);
+  }
+
   isDisk(element) {
-    let index =  element.getAttribute('diskIndex');
+    let index =  element.getAttribute(INDEX_ATTRIBUTE);
     console.log(index);
     return index !== null;
+  }
+
+  isDiskOnTopOfStack(disk: Disk) {
+    let pin = disk.pin;
+    return pin.disks[pin.disks.length - 1] === disk;
   }
 
   updateDiskWidth() {
