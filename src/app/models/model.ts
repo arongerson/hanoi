@@ -65,16 +65,11 @@ export class Disk {
         return this.index > disk.index;
     }
 
-    updatePin(newPin: Pin) {
-
-    }
-
     public static createElement(index: number, height: number, width: number, left: number, color: string) {
         let element = document.createElement('div');
         element.style.position = 'absolute';
         element.style.bottom = `${index*height}px`;
         element.style.left = `${left}px`;
-        // element.style.transform = `translate3d(${left}px, ${index*height}px, 0)`;
         element.style.height = `${height}px`;
         element.style.width = `${width}px`;
         element.style.backgroundColor = color;
@@ -133,6 +128,7 @@ export class Hanoi {
     initialY: number;
     xOffset: number = 0;
     yOffset: number = 0;
+    numberOfMoves: number;
 
     disks: Disk[] = [];
 
@@ -147,7 +143,7 @@ export class Hanoi {
     pinWidth: number;
     height: number = 30;
 
-    numberOfDisks = 10;
+    numberOfDisks = 5;
     active: boolean;
     element: any;
 
@@ -160,15 +156,16 @@ export class Hanoi {
         this.createDisks();
         this.addEventListeners();
         this.updateView();
+        this.clear();
     }
 
     createPins() {
         this.pinA = new Pin('A', 0, document.getElementById('pinA'));
         this.pinB = new Pin('B', 1, document.getElementById('pinB'));
         this.pinC = new Pin('C', 2, document.getElementById('pinC'));
-      }
+    }
     
-      createDisks() {
+    createDisks() {
         let width = this.sectionWidth;
         let diskWidthOffset = this.getDiskWidthOffset();
         for (let i = 0; i < this.numberOfDisks; i++) {
@@ -179,82 +176,83 @@ export class Hanoi {
           this.canvas.appendChild(diskElement);
           width -= diskWidthOffset;
         }
-      }
+    }
     
-      mouseDown = (e) => {
+    mouseDown = (e) => {
         if (this.isDraggable(e.target)) {
-          this.element = e.target;
-          if (e.type === "touchstart") {
+            this.element = e.target;
+            if (e.type === "touchstart") {
             this.initialX = e.touches[0].clientX - parseFloat(this.element.getAttribute(OFFSET_X_ATTR));
             this.initialY = e.touches[0].clientY - parseFloat(this.element.getAttribute(OFFSET_Y_ATTR));
-          } else {
+            } else {
             this.initialX = e.clientX - parseFloat(this.element.getAttribute(OFFSET_X_ATTR));
             this.initialY = e.clientY - parseFloat(this.element.getAttribute(OFFSET_Y_ATTR));
-          }
-          this.active = true;
+            }
+            this.active = true;
         }
-      }
+    }
     
-      mouseMove = (e) => {
+    mouseMove = (e) => {
         if (this.active) {
-          e.preventDefault();
-          if (e.type === "touchmove") {
+            e.preventDefault();
+            if (e.type === "touchmove") {
             this.currentX = e.touches[0].clientX - this.initialX;
             this.currentY = e.touches[0].clientY - this.initialY;
-          } else {
+            } else {
             this.currentX = e.clientX - this.initialX;
             this.currentY = e.clientY - this.initialY;
-          }
-          this.xOffset = this.currentX;
-          this.yOffset = this.currentY;
-          this.element.setAttribute(OFFSET_X_ATTR, this.currentX.toString());
-          this.element.setAttribute(OFFSET_Y_ATTR, this.currentY.toString());
-          this.setTranslate(this.currentX, this.currentY, this.element);
+            }
+            this.xOffset = this.currentX;
+            this.yOffset = this.currentY;
+            this.element.setAttribute(OFFSET_X_ATTR, this.currentX.toString());
+            this.element.setAttribute(OFFSET_Y_ATTR, this.currentY.toString());
+            this.setTranslate(this.currentX, this.currentY, this.element);
         }
-      }
-    
-      mouseUp = (e) => {
+    }
+
+    mouseUp = (e) => {
         if (this.element !== undefined && this.element !== null) {
-          this.active = false;
-          this.initialX = this.currentX;
-          this.initialY = this.currentY;
-          let disk = this.getDisk(this.element);
-          this.updateDiskPin(disk);
-          this.element = null;
+            this.active = false;
+            this.initialX = this.currentX;
+            this.initialY = this.currentY;
+            let disk = this.getDisk(this.element);
+            this.updateDiskPin(disk);
+            if (this.isGameOver()) {
+                console.log('the game is over: ' + this.numberOfMoves);
+            }
+            this.element = null;
         }
-      }
-    
-      updateDiskPin(disk: Disk) {
+    }
+
+    updateDiskPin(disk: Disk) {
         disk.updateDiskCenter();
         let nextPin = this.getNextPin(disk);
         if (nextPin === null || disk.isSamePin(nextPin)) {
-          console.log('no changes');
-          this.resetDiskPosition(disk);
-        } else {
-          if (disk.move(nextPin)) {
-            // update number of moves
-            this.positionDisk(disk, nextPin);
-          } else {
             this.resetDiskPosition(disk);
-          }
-          console.log(nextPin.name);
+        } else {
+            if (disk.move(nextPin)) {
+                this.numberOfMoves++;
+                this.positionDisk(disk, nextPin);
+            } else {
+                this.resetDiskPosition(disk);
+            }
         }
-      }
+    }
 
-      resetDiskPosition(disk: Disk) {
+    resetDiskPosition(disk: Disk) {
         disk.element.style.transform = `none`;
         this.element.setAttribute(OFFSET_X_ATTR, '0');
         this.element.setAttribute(OFFSET_Y_ATTR, '0');
-      }
+    }
 
-      positionDisk(disk: Disk, pin: Pin) {
+    positionDisk(disk: Disk, pin: Pin) {
         this.resetDiskPosition(disk);
         let left = pin.index * this.sectionWidth + (this.sectionWidth - disk.element.offsetWidth)/2;
         disk.element.style.left = `${left}px`;
         disk.element.style.bottom = `${(pin.getNumberOfDisks() - 1) * this.height}px`;
-      }
-    
-      addEventListeners() {
+    }
+
+    addEventListeners() {
         // mouse listeners
         this.canvas.addEventListener('mousedown', this.mouseDown, false);
         this.canvas.addEventListener('mousemove', this.mouseMove, false);
@@ -263,98 +261,108 @@ export class Hanoi {
         this.canvas.addEventListener('touchstart', this.mouseDown, false);
         this.canvas.addEventListener('touchmove', this.mouseMove, false);
         this.canvas.addEventListener('touchend', this.mouseUp, false);
-      }
-    
-      setTranslate(xPos, yPos, element) {
+    }
+
+    setTranslate(xPos, yPos, element) {
         if (this.element && this.isDisk(this.element)) {
-          element.style.transform = "translate3d(" + xPos + "px, " + yPos + "px, 0)";
+            element.style.transform = "translate3d(" + xPos + "px, " + yPos + "px, 0)";
         }
-      }
-    
-      getNextPin(disk: Disk) {
+    }
+
+    getNextPin(disk: Disk) {
         if (this.isDiskInPin(this.pinA, disk)) {
-          return this.pinA;
+            return this.pinA;
         } else if (this.isDiskInPin(this.pinB, disk)) {
-          return this.pinB;
+            return this.pinB;
         } if (this.isDiskInPin(this.pinC, disk)) {
-          return this.pinC;
+            return this.pinC;
         } 
         return null;
-      }
+    }
     
-      isDiskInPin(pin: Pin, disk: Disk) {
+    isDiskInPin(pin: Pin, disk: Disk) {
         let xDistance = disk.calculateXDistanceDiskToPin(pin);
         let yDistance = disk.calculateYDistanceDiskToPin(pin);
         return xDistance < this.sectionWidth/2 && yDistance < this.canvasHeight/2;
-      }
-    
-      isDraggable(element) {
+    }
+
+    isDraggable(element) {
         let disk = this.getDisk(element);
         return this.isDisk(element) && disk.isOnTopOfStack();
-      }
-    
-      getDisk(element) {
+    }
+
+    getDisk(element) {
         let index = parseInt(element.getAttribute(INDEX_ATTRIBUTE));
         return this.disks[index];
-      }
-    
-      isDisk(element) {
+    }
+
+    isDisk(element) {
         let index =  element.getAttribute(INDEX_ATTRIBUTE);
         return index !== null;
-      }
-    
-      updateDiskWidth() {
+    }
+
+    updateDiskWidth() {
         let width = this.sectionWidth;
         let diskWidthOffset = this.getDiskWidthOffset();
         for (let disk of this.disks) {
-          disk.element.style.width = `${width}px`;
-          width -= diskWidthOffset;
+            disk.element.style.width = `${width}px`;
+            width -= diskWidthOffset;
         }
-      }
-      
-      updatePinSectionCenters() {
+    }
+    
+    updatePinSectionCenters() {
         let canvasRect = this.canvas.getBoundingClientRect();
         let yCenter = canvasRect.top + (canvasRect.height/2);
         this.pinA.updateCenter(yCenter);
         this.pinB.updateCenter(yCenter);
         this.pinC.updateCenter(yCenter);
-      }
-    
-      updateCanvasDimensions() {
+    }
+
+    updateCanvasDimensions() {
         this.canvasHeight = this.canvas.offsetHeight;
         this.canvasWidth = this.canvas.offsetWidth;
         this.sectionWidth = this.canvasWidth / 3;
         this.pinWidth = this.pinA.element.offsetWidth;
         this.updateDiskWidth();
-      }
+    }
     
-      updatePinPosition() {
+    updatePinPosition() {
         let offset = (this.sectionWidth - this.pinWidth) / 2;
         this.pinA.element.style.left = `${this.sectionWidth * this.pinA.index + offset}px`;
         this.pinB.element.style.left = `${this.sectionWidth * this.pinB.index + offset}px`;
         this.pinC.element.style.left = `${this.sectionWidth * this.pinC.index + offset}px`;
         for (let disk of this.disks) {
-          disk.element.style.left = `${(this.sectionWidth - disk.element.offsetWidth)/ 2}px`;
+            let diskOffset = disk.pin.index * this.sectionWidth;
+            let left = diskOffset + (this.sectionWidth - disk.element.offsetWidth)/ 2;
+            disk.element.style.left = `${left}px`;
         }
-      }
-    
-      getDiskWidthOffset() {
+    }
+
+    getDiskWidthOffset() {
         let diskOffset = (this.sectionWidth - DESIRED_DISK_MIN_SIZE) / this.numberOfDisks;
         if (diskOffset >= DESIRED_MIN_OFFSET) {
-          return diskOffset;
-        } else {
-          diskOffset = (this.sectionWidth - DISK_MIN_SIZE) / this.numberOfDisks;
-          if (diskOffset >= DESIRED_MIN_OFFSET) {
             return diskOffset;
-          } else {
+        } else {
+            diskOffset = (this.sectionWidth - DISK_MIN_SIZE) / this.numberOfDisks;
+            if (diskOffset >= DESIRED_MIN_OFFSET) {
+            return diskOffset;
+            } else {
             return EXTRA_SMALL_OFFSET;
-          }
+            }
         } 
-      }
-      
-      updateView() {
+    }
+
+    isGameOver() {
+        return this.pinC.getNumberOfDisks() === this.numberOfDisks;
+    }
+    
+    updateView() {
         this.updateCanvasDimensions();
         this.updatePinPosition();
         this.updatePinSectionCenters();
-      }
+    }
+
+    clear() {
+        this.numberOfMoves = 0;
+    }
 }
