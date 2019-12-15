@@ -1,5 +1,5 @@
 import { Component, OnInit, AfterViewInit, HostListener } from '@angular/core';
-import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
+import { Pin, Disk } from '../../models/model';
 
 const DESIRED_DISK_MIN_SIZE = 40;
 const DISK_MIN_SIZE = 20;
@@ -8,19 +8,6 @@ const EXTRA_SMALL_OFFSET = 10;
 const INDEX_ATTRIBUTE = "index";
 const OFFSET_X_ATTR = 'offsetX';
 const OFFSET_Y_ATTR = 'offsetY';
-
-export interface Disk {
-  index: number;
-  pin: Pin;
-  element: HTMLElement;
-}
-
-export interface Pin {
-  name: string;
-  index: number;
-  element: HTMLElement;
-  disks: Disk[];
-}
 
 
 @Component({
@@ -31,7 +18,6 @@ export interface Pin {
 export class CanvasComponent implements OnInit, AfterViewInit {
 
   canvas: HTMLElement;
-
   pinA: Pin;
   pinB: Pin;
   pinC: Pin;
@@ -42,9 +28,6 @@ export class CanvasComponent implements OnInit, AfterViewInit {
   initialY: number;
   xOffset: number = 0;
   yOffset: number = 0;
-
-  diskCenterX: number;
-  diskCenterY: number;
 
   disks: Disk[] = [];
 
@@ -65,8 +48,6 @@ export class CanvasComponent implements OnInit, AfterViewInit {
   constructor() { }
 
   ngOnInit() {
-    this.getElements();
-    this.align();
   }
 
   ngAfterViewInit() {
@@ -78,9 +59,9 @@ export class CanvasComponent implements OnInit, AfterViewInit {
   }
 
   createPins() {
-    this.pinA = {name: 'A', index: 0, element: document.getElementById('pinA'), disks: []};
-    this.pinB = {name: 'B', index: 1, element: document.getElementById('pinB'), disks: []};
-    this.pinC = {name: 'C', index: 2, element: document.getElementById('pinC'), disks: []};
+    this.pinA = new Pin('A', 0, document.getElementById('pinA'));
+    this.pinB = new Pin('B', 1, document.getElementById('pinB'));
+    this.pinC = new Pin('C', 2, document.getElementById('pinC'));
   }
 
   createDisks() {
@@ -88,23 +69,11 @@ export class CanvasComponent implements OnInit, AfterViewInit {
     let diskWidthOffset = this.getDiskWidthOffset();
     let height = 30;
     for (let i = 0; i < this.numberOfDisks; i++) {
-      let element = document.createElement('div');
-      element.style.position = 'absolute';
-      element.style.bottom = `${i*height}px`;
-      // element.draggable = true;
-      element.style.left = `${(this.sectionWidth - width) / 2}px`
-      element.style.height = `${height}px`;
-      element.style.width = `${width}px`;
-      element.style.backgroundColor = this.colors[i];
-      element.style.border = 'solid 1px black';
-      element.setAttribute(INDEX_ATTRIBUTE, i.toString());
-      element.setAttribute(OFFSET_X_ATTR, '0');
-      element.setAttribute(OFFSET_Y_ATTR, '0');
-      let disk = {index: i, element: element, pin: this.pinA};
-      this.pinA.disks.push(disk);
+      let left = (this.sectionWidth - width) / 2;
+      let diskElement = Disk.createElement(i, height, width, left, this.colors[i]);
+      let disk = new Disk(i,this. pinA, diskElement);
       this.disks.push(disk);
-      this.canvas.appendChild(element);
-      // update dimensions
+      this.canvas.appendChild(diskElement);
       width -= diskWidthOffset;
     }
   }
@@ -142,28 +111,24 @@ export class CanvasComponent implements OnInit, AfterViewInit {
   }
 
   mouseUp = (e) => {
-    if (this.element !== null) {
+    if (this.element !== undefined && this.element !== null) {
       this.active = false;
       this.initialX = this.currentX;
       this.initialY = this.currentY;
-      this.updateDiskPin(this.element);
+      let disk = this.getDisk(this.element);
+      this.updateDiskPin(disk);
       this.element = null;
     }
   }
 
-  updateDiskPin(element) {
-    this.updateDiskCenter(this.element);
-    let nextPin = this.getNextPin(this.element);
-    let disk = this.getDisk(this.element);
-    if (nextPin === null || this.isSamePin(nextPin, disk)) {
+  updateDiskPin(disk) {
+    disk.updateDiskCenter(disk.element);
+    let nextPin = this.getNextPin(disk);
+    if (nextPin === null || disk.isSamePin(nextPin)) {
       console.log('no changes');
     } else {
       console.log(nextPin.name);
     }
-  }
-
-  isSamePin(pin: Pin, disk: Disk) {
-    return disk.pin === pin;
   }
 
   addEventListeners() {
@@ -183,42 +148,26 @@ export class CanvasComponent implements OnInit, AfterViewInit {
     }
   }
 
-  getNextPin(element) {
-    if (this.isDiskInPin(this.pinA)) {
+  getNextPin(disk: Disk) {
+    if (this.isDiskInPin(this.pinA, disk)) {
       return this.pinA;
-    } else if (this.isDiskInPin(this.pinB)) {
+    } else if (this.isDiskInPin(this.pinB, disk)) {
       return this.pinB;
-    } if (this.isDiskInPin(this.pinC)) {
+    } if (this.isDiskInPin(this.pinC, disk)) {
       return this.pinC;
     } 
     return null;
   }
 
-  isDiskInPin(pin: Pin) {
-    let xDistance = this.calculateXDistanceDiskToPin(pin);
-    let yDistance = this.calculateYDistanceDiskToPin(pin);
+  isDiskInPin(pin: Pin, disk: Disk) {
+    let xDistance = disk.calculateXDistanceDiskToPin(pin);
+    let yDistance = disk.calculateYDistanceDiskToPin(pin);
     return xDistance < this.sectionWidth/2 && yDistance < this.canvasHeight/2;
-  }
-
-  updateDiskCenter(element) {
-    let rect = element.getBoundingClientRect();
-    this.diskCenterX = rect.left + rect.width/2;
-    this.diskCenterY = rect.top + rect.height/2;
-  }
-
-  calculateXDistanceDiskToPin(pin: Pin) {
-    let pinX = parseFloat(pin.element.getAttribute('xCenter'));
-    return Math.abs(pinX - this.diskCenterX);
-  }
-
-  calculateYDistanceDiskToPin(pin: Pin) {
-    let pinY = parseFloat(pin.element.getAttribute('yCenter'));
-    return Math.abs(pinY - this.diskCenterY);
   }
 
   isDraggable(element) {
     let disk = this.getDisk(element);
-    return this.isDisk(element) && this.isDiskOnTopOfStack(disk);
+    return this.isDisk(element) && disk.isOnTopOfStack();
   }
 
   getDisk(element) {
@@ -228,13 +177,7 @@ export class CanvasComponent implements OnInit, AfterViewInit {
 
   isDisk(element) {
     let index =  element.getAttribute(INDEX_ATTRIBUTE);
-    console.log(index);
     return index !== null;
-  }
-
-  isDiskOnTopOfStack(disk: Disk) {
-    let pin = disk.pin;
-    return pin.disks[pin.disks.length - 1] === disk;
   }
 
   updateDiskWidth() {
@@ -249,15 +192,9 @@ export class CanvasComponent implements OnInit, AfterViewInit {
   updatePinSectionCenters() {
     let canvasRect = this.canvas.getBoundingClientRect();
     let yCenter = canvasRect.top + (canvasRect.height/2);
-    this.setSectionCenters(this.pinA, yCenter);
-    this.setSectionCenters(this.pinB, yCenter);
-    this.setSectionCenters(this.pinC, yCenter);
-  }
-
-  setSectionCenters(pin: Pin, yCenter: number) {
-    let pinRect = pin.element.getBoundingClientRect();
-    pin.element.setAttribute('xCenter', (pinRect.left + pinRect.width/2).toString());
-    pin.element.setAttribute('yCenter', yCenter.toString());
+    this.pinA.updateCenter(yCenter);
+    this.pinB.updateCenter(yCenter);
+    this.pinC.updateCenter(yCenter);
   }
 
   updateCanvasDimensions() {
@@ -292,17 +229,8 @@ export class CanvasComponent implements OnInit, AfterViewInit {
     } 
   }
 
-  getElements() {
-    
-  }
-
-  align() {
-
-  }
-
   @HostListener('window:resize', ['$event'])
   onResize(event) {
-    // event.target.innerWidth;
     this.updateView();
   }
   
