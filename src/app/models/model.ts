@@ -29,7 +29,7 @@ export class Disk {
 
     isOnTopOfStack() {
         let pin = this.pin;
-        return pin.disks[pin.disks.length - 1] === this;
+        return pin.getTopDisk() === this;
     }
 
     calculateXDistanceDiskToPin(pin: Pin) {
@@ -44,11 +44,37 @@ export class Disk {
         return this.pin === pin;
     }
 
+    isDiskMovable(nextPin: Pin) {
+        let topDisk = nextPin.getTopDisk();
+        return topDisk === null || this.isDiskSmaller(topDisk);
+    }
+
+    move(nextPin: Pin) {
+        if (this.isDiskMovable(nextPin)) {
+            this.pin.disks.pop();
+            this.pin = nextPin;
+            nextPin.disks.push(this);
+            return true;
+        }
+        return false;
+    }
+
+    isDiskSmaller(disk: Disk) {
+        // the disk with greater index is smaller
+        // has to do with the way they are initially generated 
+        return this.index > disk.index;
+    }
+
+    updatePin(newPin: Pin) {
+
+    }
+
     public static createElement(index: number, height: number, width: number, left: number, color: string) {
         let element = document.createElement('div');
         element.style.position = 'absolute';
         element.style.bottom = `${index*height}px`;
-        element.style.left = `${left}px`
+        element.style.left = `${left}px`;
+        // element.style.transform = `translate3d(${left}px, ${index*height}px, 0)`;
         element.style.height = `${height}px`;
         element.style.width = `${width}px`;
         element.style.backgroundColor = color;
@@ -80,6 +106,18 @@ export class Pin {
         this.centerX = pinRect.left + pinRect.width/2;
         this.centerY = yCenter;
     }
+
+    getNumberOfDisks() {
+        return this.disks.length;
+    }
+
+    getTopDisk() {
+        let n = this.getNumberOfDisks();
+        if (n === 0) {
+            return null;
+        }
+        return this.disks[n - 1];
+    }
 }
 
 export class Hanoi {
@@ -107,6 +145,7 @@ export class Hanoi {
     canvasWidth: number;
     canvasHeight: number;
     pinWidth: number;
+    height: number = 30;
 
     numberOfDisks = 10;
     active: boolean;
@@ -132,10 +171,9 @@ export class Hanoi {
       createDisks() {
         let width = this.sectionWidth;
         let diskWidthOffset = this.getDiskWidthOffset();
-        let height = 30;
         for (let i = 0; i < this.numberOfDisks; i++) {
           let left = (this.sectionWidth - width) / 2;
-          let diskElement = Disk.createElement(i, height, width, left, this.colors[i]);
+          let diskElement = Disk.createElement(i, this.height, width, left, this.colors[i]);
           let disk = new Disk(i,this. pinA, diskElement);
           this.disks.push(disk);
           this.canvas.appendChild(diskElement);
@@ -186,14 +224,34 @@ export class Hanoi {
         }
       }
     
-      updateDiskPin(disk) {
-        disk.updateDiskCenter(disk.element);
+      updateDiskPin(disk: Disk) {
+        disk.updateDiskCenter();
         let nextPin = this.getNextPin(disk);
         if (nextPin === null || disk.isSamePin(nextPin)) {
           console.log('no changes');
+          this.resetDiskPosition(disk);
         } else {
+          if (disk.move(nextPin)) {
+            // update number of moves
+            this.positionDisk(disk, nextPin);
+          } else {
+            this.resetDiskPosition(disk);
+          }
           console.log(nextPin.name);
         }
+      }
+
+      resetDiskPosition(disk: Disk) {
+        disk.element.style.transform = `none`;
+        this.element.setAttribute(OFFSET_X_ATTR, '0');
+        this.element.setAttribute(OFFSET_Y_ATTR, '0');
+      }
+
+      positionDisk(disk: Disk, pin: Pin) {
+        this.resetDiskPosition(disk);
+        let left = pin.index * this.sectionWidth + (this.sectionWidth - disk.element.offsetWidth)/2;
+        disk.element.style.left = `${left}px`;
+        disk.element.style.bottom = `${(pin.getNumberOfDisks() - 1) * this.height}px`;
       }
     
       addEventListeners() {
@@ -293,11 +351,6 @@ export class Hanoi {
           }
         } 
       }
-    
-    //   @HostListener('window:resize', ['$event'])
-    //   onResize(event) {
-    //     this.updateView();
-    //   }
       
       updateView() {
         this.updateCanvasDimensions();
