@@ -129,12 +129,16 @@ export class Hanoi {
     xOffset: number = 0;
     yOffset: number = 0;
     numberOfMoves: number;
+    timer: any;
+    timeElapsed: string = '00:00:00';
+    startTime: number;
+    gameStarted : boolean = false;
 
     disks: Disk[] = [];
 
     colors: string[] = [
-            'brown', 'crimson', 'darkcyan', 'darkgoldenrod', 'darkmagenta' ,
-            'dodgerblue', 'goldenrod', 'indigo', 'lawngreen', 'lightcoral'
+        'brown', 'crimson', 'darkcyan', 'darkgoldenrod', 'darkmagenta' ,
+        'dodgerblue', 'goldenrod', 'indigo', 'lawngreen', 'lightcoral'
     ]
 
     sectionWidth: number;
@@ -180,6 +184,7 @@ export class Hanoi {
     
     mouseDown = (e) => {
         if (this.isDraggable(e.target)) {
+            this.startTimer();
             this.element = e.target;
             if (e.type === "touchstart") {
             this.initialX = e.touches[0].clientX - parseFloat(this.element.getAttribute(OFFSET_X_ATTR));
@@ -364,5 +369,21 @@ export class Hanoi {
 
     clear() {
         this.numberOfMoves = 0;
+    }
+
+    startTimer() {
+        if (!this.gameStarted) {
+            this.gameStarted = true;
+            this.startTime = Date.now();
+            this.timer = setInterval(() => {
+                let millis = Date.now() - this.startTime;
+                let seconds = Math.round(millis / 1000);
+                let secondsElapsed = seconds % 60;
+                let minutes = Math.floor(seconds / 60);
+                let minutesElapsed = minutes % 60;
+                let hoursElapsed = Math.floor(minutes / 60);
+                this.timeElapsed = `${hoursElapsed}:${minutesElapsed}:${secondsElapsed}`;
+            }, 1000);
+        }
     }
 }

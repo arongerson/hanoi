@@ -13,16 +13,25 @@ export class CanvasComponent implements OnInit, AfterViewInit {
   constructor() { }
 
   ngOnInit() {
+    this.hanoi = new Hanoi();
+    this.hanoi.init();
   }
 
   ngAfterViewInit() {
-    this.hanoi = new Hanoi();
-    this.hanoi.init();
+    
   }
 
   @HostListener('window:resize', ['$event'])
   onResize(event) {
     this.hanoi.updateView();
+  }
+
+  getTimeElapsed() {
+    return this.hanoi.timeElapsed;
+  }
+
+  getNumberOfMoves() {
+    return this.hanoi.numberOfMoves;
   }
 
 }

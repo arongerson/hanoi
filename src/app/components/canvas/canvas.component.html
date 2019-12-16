@@ -21,8 +21,41 @@
         position: absolute;
         bottom: 0;
     }
+
+    .stats {
+        position: absolute;
+        left: 1rem;
+        top: 1rem;
+    }
+
+    .stats div {
+        background-color: brown;
+        color: white;
+        padding: 0.5rem;
+        border-radius: 0.3rem;
+    }
+
+    .stats button {
+        margin-top: 0.5rem;
+        width: 100%;
+    }
+
+    .stats div span {
+        display: block;
+    }
+
+    #timer {
+        padding-bottom: 1rem;
+    }
 </style>
 <div class="canvas" id="canvas">
+    <div class="stats">
+        <div class="mat-elevation-z2 mat-body-strong">
+            <span id="timer" *ngIf="hanoi">{{getTimeElapsed()}}</span>
+            <span id="moves" *ngIf="hanoi">{{getNumberOfMoves()}} moves</span>
+        </div>
+        <button mat-raised-button color="primary">Restart</button>
+    </div>
     <div class="pin" id="pinA"></div>
     <div class="pin" id="pinB"></div>
     <div class="pin" id="pinC"></div>
