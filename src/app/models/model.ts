@@ -382,8 +382,18 @@ export class Hanoi {
                 let minutes = Math.floor(seconds / 60);
                 let minutesElapsed = minutes % 60;
                 let hoursElapsed = Math.floor(minutes / 60);
-                this.timeElapsed = `${hoursElapsed}:${minutesElapsed}:${secondsElapsed}`;
+                let formattedSeconds = this.formatTime(secondsElapsed);
+                let formattedMins = this.formatTime(minutesElapsed);
+                let formattedHours = this.formatTime(hoursElapsed);
+                this.timeElapsed = `${formattedHours}:${formattedMins}:${formattedSeconds}`;
             }, 1000);
         }
+    }
+
+    formatTime(value: number) {
+        if (value < 10) {
+            return `0${value}`;
+        }
+        return value;
     }
 }
