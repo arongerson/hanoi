@@ -293,7 +293,7 @@ export class Hanoi {
 
     isDraggable(element) {
         let disk = this.getDisk(element);
-        return this.isDisk(element) && disk.isOnTopOfStack();
+        return this.isDisk(element) && disk.isOnTopOfStack() && !this.isGameOver();
     }
 
     getDisk(element) {
