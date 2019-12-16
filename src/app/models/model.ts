@@ -147,7 +147,7 @@ export class Hanoi {
     pinWidth: number;
     height: number = 30;
 
-    numberOfDisks = 5;
+    numberOfDisks = 3;
     active: boolean;
     element: any;
 
@@ -223,7 +223,7 @@ export class Hanoi {
             let disk = this.getDisk(this.element);
             this.updateDiskPin(disk);
             if (this.isGameOver()) {
-                console.log('the game is over: ' + this.numberOfMoves);
+                this.setGameIsOver();
             }
             this.element = null;
         }
@@ -355,6 +355,11 @@ export class Hanoi {
             return EXTRA_SMALL_OFFSET;
             }
         } 
+    }
+
+    setGameIsOver() {
+        clearInterval(this.timer);
+        this.gameStarted = false;
     }
 
     isGameOver() {
