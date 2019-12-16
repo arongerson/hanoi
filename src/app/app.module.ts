@@ -5,6 +5,9 @@ import { LayoutModule } from '@angular/cdk/layout';
 import {
   MatButtonModule,
   MatDialogModule,
+  MatMenuModule,
+  MatIconModule,
+  MatGridListModule,
   MAT_DIALOG_DEFAULT_OPTIONS
 } from '@angular/material';
 
@@ -27,7 +30,10 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     AppRoutingModule,
     BrowserAnimationsModule,
     MatButtonModule,
-    MatDialogModule
+    MatDialogModule,
+    MatMenuModule,
+    MatIconModule,
+    MatGridListModule
   ],
   entryComponents: [
     GameOverDialog

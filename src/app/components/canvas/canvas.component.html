@@ -1,4 +1,10 @@
 <style>
+    .container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
     .canvas {
         max-width: 60rem;
         height: 30rem;
@@ -6,6 +12,7 @@
         margin: 0 auto;
         display: flex;
         position: relative;
+        margin: 0 1rem;
     }
 
     .pin-section {
@@ -17,46 +24,104 @@
     .pin {
         width: 10px;
         height: 95%;
-        background-color: brown;
+        background-color: firebrick;
         position: absolute;
         bottom: 0;
     }
 
-    .stats {
-        position: absolute;
-        left: 1rem;
-        top: 1rem;
+    .settings-container {
+        display: flex; 
+        align-items: center;
     }
 
-    .stats div {
+    .settings {
+        display: inline-block;
+        margin: 0 auto;
+    }
+
+    .stats {
         background-color: brown;
         color: white;
         padding: 0.5rem;
         border-radius: 0.3rem;
+        display: flex;
+        flex-direction: column;
     }
 
-    .stats button {
+    .settings div p {
+        padding: 0;
+        margin: 0;
+    }
+
+    .control-button-container {
+        display: flex; 
+        flex-direction: column;
+    }
+
+    .control-button-container button {
         margin-top: 0.5rem;
-        width: 100%;
-    }
-
-    .stats div span {
-        display: block;
+        /* width: 100%; */
     }
 
     #timer {
         padding-bottom: 1rem;
     }
+
+    .disks {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .controls {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: absolute;
+        top: 1rem;
+    }
+
+    .disks >* {
+        margin-bottom: 0.7rem;
+    }
+
+    .base {
+        flex: 1;
+        background-color:firebrick;
+    }
 </style>
-<div class="canvas" id="canvas">
-    <div class="stats">
-        <div class="mat-elevation-z2 mat-body-strong">
-            <span *ngIf="hanoi">{{getTimeElapsed()}}</span>
-            <span *ngIf="hanoi">{{getNumberOfMoves()}} moves</span>
+<div class="container">
+    <div class="canvas" id="canvas">
+        <div class="controls">
+            <button mat-icon-button [matMenuTriggerFor]="appMenu" class="menu">
+                <mat-icon [hidden]="showMenu">menu</mat-icon>
+            </button>
+            <div class="disks">
+                <button mat-fab aria-label="Increase disks" color="primary" (click)="addDisk()">
+                    <mat-icon>add</mat-icon>
+                </button>   
+                <button mat-fab aria-label="Decrease disks" color="primary" (click)="removeDisk()">
+                    <mat-icon>remove</mat-icon>
+                </button>   
+            </div>
         </div>
-        <button mat-raised-button color="primary" (click)="restart()">Restart</button>
+        <mat-menu #appMenu="matMenu" class="mat-elevation-z2">
+            <div class="settings-container">
+                <div class="settings">
+                    <div class="stats mat-elevation-z2 mat-body-strong">
+                        <p *ngIf="hanoi">{{getTimeElapsed()}}</p>
+                        <p *ngIf="hanoi">{{getNumberOfMoves()}} moves</p>
+                    </div>
+                    <div class="control-button-container">
+                        <button mat-raised-button color="primary" (click)="restart()">Restart</button>
+                        <button mat-raised-button color="primary" (click)="restart()">Simulate</button>
+                    </div>
+                </div>
+            </div>
+        </mat-menu>
+        <div class="pin" id="pinA"></div>
+        <div class="pin" id="pinB"></div>
+        <div class="pin" id="pinC"></div>
     </div>
-    <div class="pin" id="pinA"></div>
-    <div class="pin" id="pinB"></div>
-    <div class="pin" id="pinC"></div>
+    <div class="base">
+    </div>
 </div>

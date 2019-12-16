@@ -2,8 +2,8 @@ import { Component, Inject, OnInit, AfterViewInit, HostListener } from '@angular
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 export interface DialogData {
-  animal: string;
-  name: string;
+  moves: number;
+  optimalMoves: number;
 }
 import { Hanoi} from '../../models/model';
 
@@ -15,13 +15,18 @@ import { Hanoi} from '../../models/model';
 export class CanvasComponent implements OnInit, AfterViewInit {
 
   hanoi: Hanoi;
+  showMenu = false;
 
   constructor(public dialog: MatDialog) {}
 
   openDialog(moves: number, optimalMoves: number): void {
-    this.dialog.open(GameOverDialog, {
+    const dialogRef = this.dialog.open(GameOverDialog, {
       panelClass: 'custom-dialog-container',
       data: {moves: moves, optimalMoves: optimalMoves}
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      this.restart();
     });
   }
 
@@ -49,6 +54,14 @@ export class CanvasComponent implements OnInit, AfterViewInit {
 
   restart() {
     this.hanoi.restart();
+  }
+
+  addDisk() {
+    this.hanoi.addDisk();
+  }
+
+  removeDisk() {
+    this.hanoi.removeDisk();
   }
 
 }

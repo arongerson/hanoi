@@ -75,7 +75,6 @@ export class Disk {
         element.style.height = `${height}px`;
         element.style.width = `${width}px`;
         element.style.backgroundColor = color;
-        element.style.border = 'solid 1px black';
         element.setAttribute(INDEX_ATTRIBUTE, index.toString());
         element.setAttribute(OFFSET_X_ATTR, '0');
         element.setAttribute(OFFSET_Y_ATTR, '0');
@@ -139,7 +138,7 @@ export class Hanoi {
     disks: Disk[] = [];
 
     colors: string[] = [
-        'brown', 'crimson', 'darkcyan', 'darkgoldenrod', 'darkmagenta' ,
+        'slategray', 'crimson', 'darkcyan', 'darkgoldenrod', 'darkmagenta' ,
         'dodgerblue', 'goldenrod', 'indigo', 'lawngreen', 'lightcoral'
     ]
 
@@ -426,6 +425,20 @@ export class Hanoi {
         for (let disk of this.disks) {
             this.canvas.removeChild(disk.element);
             disk = null;
+        }
+    }
+
+    addDisk() {
+        if (this.numberOfDisks < 10) {
+            this.numberOfDisks++;
+            this.restart();
+        }
+    }
+
+    removeDisk() {
+        if (this.numberOfDisks > 3) {
+            this.numberOfDisks--;
+            this.restart();
         }
     }
 }
