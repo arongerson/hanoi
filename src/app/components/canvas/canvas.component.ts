@@ -1,10 +1,12 @@
 import { Component, Inject, OnInit, AfterViewInit, HostListener } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { DiskCountService } from '../../models/services/disk-count.service';
+import { UtilService } from '../../models/services/util.service';
 
 export interface DialogData {
   moves: number;
   optimalMoves: number;
+  totalTime: string;
 }
 import { Hanoi} from '../../models/hanoi';
 
@@ -20,13 +22,14 @@ export class CanvasComponent implements OnInit, AfterViewInit {
 
   constructor(
     public dialog: MatDialog,
-    private diskCountService: DiskCountService
+    private diskCountService: DiskCountService,
+    private util: UtilService
   ) {}
 
-  openDialog(moves: number, optimalMoves: number): void {
+  openDialog(moves: number, optimalMoves: number, totalTime: string): void {
     const dialogRef = this.dialog.open(GameOverDialog, {
       panelClass: 'custom-dialog-container',
-      data: {moves: moves, optimalMoves: optimalMoves}
+      data: { moves: moves, optimalMoves: optimalMoves, totalTime: totalTime }
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -35,7 +38,7 @@ export class CanvasComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-    this.hanoi = new Hanoi(this, this.diskCountService);
+    this.hanoi = new Hanoi(this, this.diskCountService, this.util);
     this.hanoi.init();
   }
 

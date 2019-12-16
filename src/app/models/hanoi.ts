@@ -1,4 +1,5 @@
 import { CanvasComponent } from '../components/canvas/canvas.component';
+import { UtilService } from './services/util.service';
 import { DiskCountService } from './services/disk-count.service';
 import { Pin, Disk } from './model';
 import {
@@ -49,7 +50,8 @@ export class Hanoi {
 
     public constructor(
         private component: CanvasComponent,
-        private diskCountService: DiskCountService
+        private diskCountService: DiskCountService,
+        private util: UtilService
     ) {
         this.numberOfDisks = this.diskCountService.getNumberOfDisks();
     }
@@ -260,7 +262,8 @@ export class Hanoi {
     setGameIsOver() {
         clearInterval(this.timer);
         this.gameStarted = false;
-        this.component.openDialog(this.numberOfMoves, this.getOptimalMoves());
+        let totalTime = this.util.formatTotatlTime(this.util.getHourMinSec(this.startTime));
+        this.component.openDialog(this.numberOfMoves, this.getOptimalMoves(), totalTime);
     }
 
     getOptimalMoves() {
@@ -286,25 +289,13 @@ export class Hanoi {
             this.gameStarted = true;
             this.startTime = Date.now();
             this.timer = setInterval(() => {
-                let millis = Date.now() - this.startTime;
-                let seconds = Math.round(millis / 1000);
-                let secondsElapsed = seconds % 60;
-                let minutes = Math.floor(seconds / 60);
-                let minutesElapsed = minutes % 60;
-                let hoursElapsed = Math.floor(minutes / 60);
-                let formattedSeconds = this.formatTime(secondsElapsed);
-                let formattedMins = this.formatTime(minutesElapsed);
-                let formattedHours = this.formatTime(hoursElapsed);
+                let times = this.util.getHourMinSec(this.startTime);
+                let formattedSeconds = this.util.formatTime(times[2]);
+                let formattedMins = this.util.formatTime(times[1]);
+                let formattedHours = this.util.formatTime(times[0]);
                 this.timeElapsed = `${formattedHours}:${formattedMins}:${formattedSeconds}`;
             }, 1000);
         }
-    }
-
-    formatTime(value: number) {
-        if (value < 10) {
-            return `0${value}`;
-        }
-        return value;
     }
 
     restart() {
