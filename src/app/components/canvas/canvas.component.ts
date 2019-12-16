@@ -34,4 +34,8 @@ export class CanvasComponent implements OnInit, AfterViewInit {
     return this.hanoi.numberOfMoves;
   }
 
+  restart() {
+    this.hanoi.restart();
+  }
+
 }

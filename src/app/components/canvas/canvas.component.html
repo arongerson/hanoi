@@ -51,10 +51,10 @@
 <div class="canvas" id="canvas">
     <div class="stats">
         <div class="mat-elevation-z2 mat-body-strong">
-            <span id="timer" *ngIf="hanoi">{{getTimeElapsed()}}</span>
-            <span id="moves" *ngIf="hanoi">{{getNumberOfMoves()}} moves</span>
+            <span *ngIf="hanoi">{{getTimeElapsed()}}</span>
+            <span *ngIf="hanoi">{{getNumberOfMoves()}} moves</span>
         </div>
-        <button mat-raised-button color="primary">Restart</button>
+        <button mat-raised-button color="primary" (click)="restart()">Restart</button>
     </div>
     <div class="pin" id="pinA"></div>
     <div class="pin" id="pinB"></div>

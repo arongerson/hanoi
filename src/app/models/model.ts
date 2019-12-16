@@ -401,4 +401,24 @@ export class Hanoi {
         }
         return value;
     }
+
+    restart() {
+        this.pinA.disks = [];
+        this.pinB.disks = [];
+        this.pinC.disks = [];
+        this.gameStarted = false;
+        this.numberOfMoves = 0;
+        this.clearDisks();
+        this.disks = [];
+        clearInterval(this.timer);
+        this.timeElapsed = '00:00:00';
+        this.createDisks();
+    }
+
+    clearDisks() {
+        for (let disk of this.disks) {
+            this.canvas.removeChild(disk.element);
+            disk = null;
+        }
+    }
 }
