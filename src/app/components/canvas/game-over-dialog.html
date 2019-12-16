@@ -20,8 +20,10 @@
   <div class="content">
     <h1 mat-dialog-title>Game over!</h1>
     <div mat-dialog-content>
-      <p>{{data.moves}} moves completed in {{data.totalTime}}</p>
-      <p>Optimal: {{data.optimalMoves}} moves</p>
+      <p>
+        <strong>{{data.moves}}</strong> moves completed in <strong>{{data.totalTime}}</strong>
+      </p>
+      <p>Optimal: <strong>{{data.optimalMoves}}</strong> moves</p>
     </div>
   </div>
   <div mat-dialog-actions class="controls">
