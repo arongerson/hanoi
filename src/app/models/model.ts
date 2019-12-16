@@ -17,6 +17,8 @@ export class Disk {
         this.pin = pin;
         this.element = element;
         pin.disks.push(this);
+        this.element.addEventListener('mouseover', this.mouseOver, false);
+        this.element.addEventListener('mouseleave', this.mouseLeave, false);
     }
 
     updateDiskCenter() {
@@ -76,6 +78,20 @@ export class Disk {
         element.setAttribute(OFFSET_Y_ATTR, '0');
         return element;
     }
+
+    mouseOver = (e) => {
+        if (this.isOnTopOfStack()) {
+            this.element.style.cursor = 'move';
+            this.element.style.boxShadow = '0 0 10px 0px black';
+        } else {
+            this.element.style.cursor = 'not-allowed';
+        }
+    };
+
+    mouseLeave = (e) => {
+        this.element.style.cursor = 'default';
+        this.element.style.boxShadow = 'none';
+    };
 }
 
 export class Pin {

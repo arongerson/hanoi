@@ -129,7 +129,7 @@ export class Hanoi {
             }
             this.element = null;
         }
-    }
+    }   
 
     updateDiskPin(disk: Disk) {
         disk.updateDiskCenter();
