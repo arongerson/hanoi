@@ -1,5 +1,6 @@
 import { Component, Inject, OnInit, AfterViewInit, HostListener } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { DiskCountService } from '../../models/services/disk-count.service';
 
 export interface DialogData {
   moves: number;
@@ -17,7 +18,10 @@ export class CanvasComponent implements OnInit, AfterViewInit {
   hanoi: Hanoi;
   showMenu = false;
 
-  constructor(public dialog: MatDialog) {}
+  constructor(
+    public dialog: MatDialog,
+    private diskCountService: DiskCountService
+  ) {}
 
   openDialog(moves: number, optimalMoves: number): void {
     const dialogRef = this.dialog.open(GameOverDialog, {
@@ -31,7 +35,7 @@ export class CanvasComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-    this.hanoi = new Hanoi(this);
+    this.hanoi = new Hanoi(this, this.diskCountService);
     this.hanoi.init();
   }
 

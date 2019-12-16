@@ -1,4 +1,5 @@
 import { CanvasComponent } from '../components/canvas/canvas.component';
+import { DiskCountService } from './services/disk-count.service';
 
 const DESIRED_DISK_MIN_SIZE = 40;
 const DISK_MIN_SIZE = 20;
@@ -152,7 +153,11 @@ export class Hanoi {
     active: boolean;
     element: any;
 
-    public constructor(private component: CanvasComponent ) {
+    public constructor(
+        private component: CanvasComponent,
+        private diskCountService: DiskCountService
+    ) {
+        this.numberOfDisks = this.diskCountService.getNumberOfDisks();
     }
 
     init() {
@@ -431,6 +436,7 @@ export class Hanoi {
     addDisk() {
         if (this.numberOfDisks < 10) {
             this.numberOfDisks++;
+            this.diskCountService.setNumberOfDisks(this.numberOfDisks);
             this.restart();
         }
     }
@@ -438,6 +444,7 @@ export class Hanoi {
     removeDisk() {
         if (this.numberOfDisks > 3) {
             this.numberOfDisks--;
+            this.diskCountService.setNumberOfDisks(this.numberOfDisks);
             this.restart();
         }
     }

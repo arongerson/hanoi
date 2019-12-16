@@ -11,6 +11,8 @@ import {
   MAT_DIALOG_DEFAULT_OPTIONS
 } from '@angular/material';
 
+import { DiskCountService } from './models/services/disk-count.service';
+
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { CanvasComponent, GameOverDialog } from './components/canvas/canvas.component';
@@ -39,7 +41,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     GameOverDialog
   ],
   providers: [
-    {provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: {hasBackdrop: false}}
+    {provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: {hasBackdrop: false}},
+    DiskCountService
   ],
   bootstrap: [AppComponent]
 })
