@@ -6,7 +6,7 @@ export interface DialogData {
   moves: number;
   optimalMoves: number;
 }
-import { Hanoi} from '../../models/model';
+import { Hanoi} from '../../models/hanoi';
 
 @Component({
   selector: 'app-canvas',
