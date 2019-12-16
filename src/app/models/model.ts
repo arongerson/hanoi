@@ -1,3 +1,5 @@
+import { CanvasComponent } from '../components/canvas/canvas.component';
+
 const DESIRED_DISK_MIN_SIZE = 40;
 const DISK_MIN_SIZE = 20;
 const DESIRED_MIN_OFFSET = 20;
@@ -151,7 +153,7 @@ export class Hanoi {
     active: boolean;
     element: any;
 
-    public constructor() {
+    public constructor(private component: CanvasComponent ) {
     }
 
     init() {
@@ -360,6 +362,11 @@ export class Hanoi {
     setGameIsOver() {
         clearInterval(this.timer);
         this.gameStarted = false;
+        this.component.openDialog(this.numberOfMoves, this.getOptimalMoves());
+    }
+
+    getOptimalMoves() {
+        return Math.floor(Math.pow(2, this.numberOfDisks) - 1);
     }
 
     isGameOver() {

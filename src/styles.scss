@@ -6,5 +6,10 @@ body, html {
     padding: 0;
 }
 
+.custom-dialog-container .mat-dialog-container {
+    padding: 0;
+    overflow: hidden;
+}
+
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
