@@ -2,7 +2,6 @@
     .container {
         display: flex;
         flex-direction: column;
-        /* align-items: center; */
         height: 100%;
     }
 
@@ -27,40 +26,6 @@
         background-color: firebrick;
         position: absolute;
         bottom: 0;
-    }
-
-    .settings-container {
-        display: flex; 
-        align-items: center;
-    }
-
-    .settings {
-        display: inline-block;
-        margin: 0 auto;
-    }
-
-    .stats {
-        background-color: brown;
-        color: white;
-        padding: 0.5rem;
-        border-radius: 0.3rem;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .settings div p {
-        padding: 0;
-        margin: 0;
-    }
-
-    .control-button-container {
-        display: flex; 
-        flex-direction: column;
-    }
-
-    .control-button-container button {
-        margin-top: 0.5rem;
-        /* width: 100%; */
     }
 
     #timer {
@@ -106,18 +71,12 @@
             </div>
         </div>
         <mat-menu #appMenu="matMenu" class="mat-elevation-z2">
-            <div class="settings-container">
-                <div class="settings">
-                    <div class="stats mat-elevation-z2 mat-body-strong">
-                        <p *ngIf="hanoi">{{getTimeElapsed()}}</p>
-                        <p *ngIf="hanoi">{{getNumberOfMoves()}} moves</p>
-                    </div>
-                    <div class="control-button-container">
-                        <button mat-raised-button color="primary" (click)="restart()">Restart</button>
-                        <button mat-raised-button color="primary" (click)="restart()">Simulate</button>
-                    </div>
-                </div>
-            </div>
+            <app-game-progress 
+                (restartEvent)="restart()"
+                (simulateEvent)="simulate()"
+                [numberOfMoves]="getNumberOfMoves()"
+                [timeElapsed]="getTimeElapsed()">
+            </app-game-progress>
         </mat-menu>
         <div class="pin" id="pinA"></div>
         <div class="pin" id="pinB"></div>

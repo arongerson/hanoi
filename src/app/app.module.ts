@@ -18,13 +18,15 @@ import { AppComponent } from './app.component';
 import { CanvasComponent, GameOverDialog } from './components/canvas/canvas.component';
 import { SettingsComponent } from './components/settings/settings.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { GameProgressComponent } from './components/game-progress/game-progress.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     CanvasComponent,
     GameOverDialog,
-    SettingsComponent
+    SettingsComponent,
+    GameProgressComponent
   ],
   imports: [
     BrowserModule,

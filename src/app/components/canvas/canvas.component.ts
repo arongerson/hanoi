@@ -63,6 +63,10 @@ export class CanvasComponent implements OnInit, AfterViewInit {
     this.hanoi.restart();
   }
 
+  simulate() {
+    console.log('simulating...');
+  }
+
   addDisk() {
     this.hanoi.addDisk();
   }
