@@ -29,12 +29,17 @@ export class CanvasComponent implements OnInit, AfterViewInit {
   openDialog(moves: number, optimalMoves: number, totalTime: string): void {
     const dialogRef = this.dialog.open(GameOverDialog, {
       panelClass: 'custom-dialog-container',
+      width: '250px',
       data: { moves: moves, optimalMoves: optimalMoves, totalTime: totalTime }
     });
 
     dialogRef.afterClosed().subscribe(result => {
       this.restart();
     });
+  }
+
+  openInstructionsDialog(): void {
+    this.dialog.open(InstructionsDialog, {width: '250px'});
   }
 
   ngOnInit() {
@@ -90,5 +95,19 @@ export class GameOverDialog {
   onNoClick(): void {
     this.dialogRef.close();
   }
+}
 
+@Component({
+  selector: 'instructions-dialog',
+  templateUrl: 'instructions.html',
+})
+export class InstructionsDialog {
+
+  constructor(
+    public dialogRef: MatDialogRef<InstructionsDialog>
+  ) {}
+
+  onNoClick(): void {
+    this.dialogRef.close();
+  }
 }

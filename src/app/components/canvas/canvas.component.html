@@ -53,7 +53,7 @@
     .game-progress {
         position: absolute;
         top: 1rem;
-        right: -5rem;
+        right: -6rem;
     }
 
     .base {
@@ -106,6 +106,7 @@
             <app-game-progress 
                 (restartEvent)="restart()"
                 (simulateEvent)="simulate()"
+                (instructionsEvent)="openInstructionsDialog()"
                 [numberOfMoves]="getNumberOfMoves()"
                 [timeElapsed]="getTimeElapsed()">
             </app-game-progress>
@@ -114,6 +115,7 @@
             class="game-progress"
             (restartEvent)="restart()"
             (simulateEvent)="simulate()"
+            (instructionsEvent)="openInstructionsDialog()"
             [numberOfMoves]="getNumberOfMoves()"
             [timeElapsed]="getTimeElapsed()">
         </app-game-progress>

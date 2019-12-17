@@ -1,0 +1,34 @@
+<style>
+
+  .dialog:host {
+    padding: 0;
+  }
+
+  .content {
+    background-color: brown;
+    color: white;
+    padding: 1rem;
+  }
+
+  .controls {
+    padding-bottom: 2rem;
+    padding-left: 1rem;
+  }
+</style>
+
+<div>
+  <div>
+    <h1 mat-dialog-title>Instructions</h1>
+    <div mat-dialog-content>
+      <p>Move the disks from the left tower to the right tower with the minimum moves possible</p>
+      <p>Only the top disk in the tower can be moved</p>
+      <p>You can only move one disk at a time</p>
+      <p>A bigger disk cannot stay on top of a smaller disk</p>
+    </div>
+  </div>
+  <div mat-dialog-actions>
+    <button mat-raised-button [mat-dialog-close]="" cdkFocusInitial>
+      Close
+    </button>
+  </div>
+</div>

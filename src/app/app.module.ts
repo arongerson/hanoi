@@ -15,7 +15,9 @@ import { DiskCountService } from './models/services/disk-count.service';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { CanvasComponent, GameOverDialog } from './components/canvas/canvas.component';
+import { 
+  CanvasComponent, GameOverDialog, InstructionsDialog
+} from './components/canvas/canvas.component';
 import { SettingsComponent } from './components/settings/settings.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { GameProgressComponent } from './components/game-progress/game-progress.component';
@@ -26,7 +28,8 @@ import { GameProgressComponent } from './components/game-progress/game-progress.
     CanvasComponent,
     GameOverDialog,
     SettingsComponent,
-    GameProgressComponent
+    GameProgressComponent,
+    InstructionsDialog
   ],
   imports: [
     BrowserModule,
@@ -40,7 +43,8 @@ import { GameProgressComponent } from './components/game-progress/game-progress.
     MatGridListModule
   ],
   entryComponents: [
-    GameOverDialog
+    GameOverDialog,
+    InstructionsDialog
   ],
   providers: [
     {provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: {hasBackdrop: false}},

@@ -19,6 +19,9 @@ export class GameProgressComponent implements OnInit {
   @Output() 
   simulateEvent = new EventEmitter();
 
+  @Output() 
+  instructionsEvent = new EventEmitter();
+
   constructor() { }
 
   ngOnInit() {
@@ -30,6 +33,10 @@ export class GameProgressComponent implements OnInit {
 
   simulate() {
     this.simulateEvent.emit();
+  }
+
+  instructions() {
+    this.instructionsEvent.emit();
   }
 
 }
