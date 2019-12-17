@@ -49,6 +49,7 @@ export class Hanoi {
     numberOfDisks = 3;
     active: boolean;
     element: any;
+    simulating = false;
 
     public constructor(
         private component: CanvasComponent,
@@ -91,11 +92,11 @@ export class Hanoi {
             this.startTimer();
             this.element = e.target;
             if (e.type === "touchstart") {
-            this.initialX = e.touches[0].clientX - parseFloat(this.element.getAttribute(OFFSET_X_ATTR));
-            this.initialY = e.touches[0].clientY - parseFloat(this.element.getAttribute(OFFSET_Y_ATTR));
+                this.initialX = e.touches[0].clientX - parseFloat(this.element.getAttribute(OFFSET_X_ATTR));
+                this.initialY = e.touches[0].clientY - parseFloat(this.element.getAttribute(OFFSET_Y_ATTR));
             } else {
-            this.initialX = e.clientX - parseFloat(this.element.getAttribute(OFFSET_X_ATTR));
-            this.initialY = e.clientY - parseFloat(this.element.getAttribute(OFFSET_Y_ATTR));
+                this.initialX = e.clientX - parseFloat(this.element.getAttribute(OFFSET_X_ATTR));
+                this.initialY = e.clientY - parseFloat(this.element.getAttribute(OFFSET_Y_ATTR));
             }
             this.active = true;
         }
@@ -105,11 +106,11 @@ export class Hanoi {
         if (this.active) {
             e.preventDefault();
             if (e.type === "touchmove") {
-            this.currentX = e.touches[0].clientX - this.initialX;
-            this.currentY = e.touches[0].clientY - this.initialY;
+                this.currentX = e.touches[0].clientX - this.initialX;
+                this.currentY = e.touches[0].clientY - this.initialY;
             } else {
-            this.currentX = e.clientX - this.initialX;
-            this.currentY = e.clientY - this.initialY;
+                this.currentX = e.clientX - this.initialX;
+                this.currentY = e.clientY - this.initialY;
             }
             this.xOffset = this.currentX;
             this.yOffset = this.currentY;
@@ -197,7 +198,7 @@ export class Hanoi {
 
     isDraggable(element) {
         let disk = this.getDisk(element);
-        return this.isDisk(element) && disk.isOnTopOfStack() && !this.isGameOver();
+        return !this.simulating && this.isDisk(element) && disk.isOnTopOfStack() && !this.isGameOver();
     }
 
     getDisk(element) {
@@ -337,7 +338,8 @@ export class Hanoi {
     }
 
     simulate() {
-        this.simulationCount = 1; // will delay
+        this.simulating = true;
+        this.simulationCount = 1;
         this.restart();
         this.hanoi(0, 0, 2, 1);
     }
@@ -352,6 +354,7 @@ export class Hanoi {
                 disk.centerY = toPin.centerY;
                 this.updateDiskPin(disk);
                 if (this.isGameOver()) {
+                    this.simulating = false;
                     this.component.simulating = false;
                 }
             }, this.simulationCount*500);
@@ -367,6 +370,7 @@ export class Hanoi {
         for (let timeOut of this.simulationQueue) {
             clearTimeout(timeOut);
         }
+        this.simulating = false;
         this.restart();
     }
 
