@@ -70,8 +70,12 @@ export class CanvasComponent implements OnInit, AfterViewInit {
   }
 
   simulate() {
-    this.simulating = true;
-    this.hanoi.simulate();
+    this.simulating = !this.simulating;
+    if (this.simulating) {
+      this.hanoi.simulate();
+    } else {
+      this.hanoi.cancelSimulation();
+    }
   }
 
   addDisk() {

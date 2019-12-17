@@ -43,6 +43,8 @@ export class Hanoi {
     canvasHeight: number;
     pinWidth: number;
     height: number = 30;
+    simulationCount = 0;
+    simulationQueue = [];
 
     numberOfDisks = 3;
     active: boolean;
@@ -339,12 +341,11 @@ export class Hanoi {
         this.restart();
         this.hanoi(0, 0, 2, 1);
     }
-
-    simulationCount = 0;
+    
     hanoi(diskIndex: number, fromIndex: number, toIndex: number, throughIndex: number) {
         if (diskIndex < this.numberOfDisks) {
             this.hanoi(diskIndex + 1, fromIndex, throughIndex, toIndex);
-            setTimeout(() => {
+            let timeOut = setTimeout(() => {
                 let disk = this.disks[diskIndex];
                 let toPin = this.findPinByIndex(toIndex);
                 disk.centerX = toPin.centerX;
@@ -354,14 +355,19 @@ export class Hanoi {
                     this.component.simulating = false;
                 }
             }, this.simulationCount*500);
+            // save the timeOut event in the queue so they can be cancelled when
+            // the simulation is cancelled
+            this.simulationQueue.push(timeOut); 
             this.simulationCount++;
             this.hanoi(diskIndex + 1, throughIndex, toIndex, fromIndex);
         }
     }
 
-    sleep(delay) {
-        var start = new Date().getTime();
-        while (new Date().getTime() < start + delay);
+    cancelSimulation() {
+        for (let timeOut of this.simulationQueue) {
+            clearTimeout(timeOut);
+        }
+        this.restart();
     }
 
     findPinByIndex(index: number): Pin {
