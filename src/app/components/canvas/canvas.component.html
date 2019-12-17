@@ -115,6 +115,7 @@
                 (restartEvent)="restart()"
                 (simulateEvent)="simulate()"
                 (instructionsEvent)="openInstructionsDialog()"
+                [simulating]="simulating"
                 [numberOfMoves]="getNumberOfMoves()"
                 [timeElapsed]="getTimeElapsed()">
             </app-game-progress>
@@ -124,6 +125,7 @@
             (restartEvent)="restart()"
             (simulateEvent)="simulate()"
             (instructionsEvent)="openInstructionsDialog()"
+            [simulating]="simulating"
             [numberOfMoves]="getNumberOfMoves()"
             [timeElapsed]="getTimeElapsed()">
         </app-game-progress>

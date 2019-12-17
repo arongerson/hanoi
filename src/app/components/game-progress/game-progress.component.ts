@@ -11,7 +11,10 @@ export class GameProgressComponent implements OnInit {
   timeElapsed = '00:00:00';
 
   @Input()
-  numberOfMoves = 10;
+  numberOfMoves = 0;
+
+  @Input()
+  simulating: boolean;
 
   @Output() 
   restartEvent = new EventEmitter();

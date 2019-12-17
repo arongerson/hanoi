@@ -41,9 +41,27 @@
             <p>{{numberOfMoves}} moves</p>
         </div>
         <div class="control-button-container">
-            <button mat-raised-button color="primary" (click)="restart()">Restart</button>
-            <button mat-raised-button color="primary" (click)="instructions()">Instructions</button>
-            <button mat-raised-button color="primary" (click)="simulate()">Simulate</button>
+            <button 
+                [disabled]="simulating"
+                mat-raised-button 
+                color="primary" 
+                (click)="restart()">
+                Restart
+            </button>
+            <button 
+                [disabled]="simulating"
+                mat-raised-button 
+                color="primary" 
+                (click)="instructions()">I
+                nstructions
+            </button>
+            <button 
+                [disabled]="simulating"
+                mat-raised-button 
+                color="primary" 
+                (click)="simulate()">
+                {{ simulating ? 'Cancel' : 'Simulate'}}
+            </button>
         </div>
     </div>
 </div>
