@@ -19,6 +19,7 @@ export class CanvasComponent implements OnInit, AfterViewInit {
 
   hanoi: Hanoi;
   showMenu = false;
+  simulating = false;
 
   constructor(
     public dialog: MatDialog,
@@ -69,7 +70,8 @@ export class CanvasComponent implements OnInit, AfterViewInit {
   }
 
   simulate() {
-    console.log('simulating...');
+    this.simulating = true;
+    this.hanoi.simulate();
   }
 
   addDisk() {

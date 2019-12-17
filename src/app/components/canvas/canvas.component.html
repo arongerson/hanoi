@@ -94,10 +94,18 @@
                 <mat-icon [hidden]="showMenu">menu</mat-icon>
             </button>
             <div class="disks">
-                <button mat-fab aria-label="Increase disks" color="primary" (click)="addDisk()">
+                <button 
+                    [disabled]="simulating"
+                    mat-fab aria-label="Increase disks" 
+                    color="primary" 
+                    (click)="addDisk()">
                     <mat-icon>add</mat-icon>
                 </button>   
-                <button mat-fab aria-label="Decrease disks" color="primary" (click)="removeDisk()">
+                <button 
+                    [disabled]="simulating"
+                    mat-fab aria-label="Decrease disks" 
+                    color="primary" 
+                    (click)="removeDisk()">
                     <mat-icon>remove</mat-icon>
                 </button>   
             </div>

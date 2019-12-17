@@ -123,6 +123,7 @@ export class Hanoi {
             this.initialX = this.currentX;
             this.initialY = this.currentY;
             let disk = this.getDisk(this.element);
+            disk.updateDiskCenter();
             this.updateDiskPin(disk);
             if (this.isGameOver()) {
                 this.setGameIsOver();
@@ -132,7 +133,6 @@ export class Hanoi {
     }   
 
     updateDiskPin(disk: Disk) {
-        disk.updateDiskCenter();
         let nextPin = this.getNextPin(disk);
         if (nextPin === null || disk.isSamePin(nextPin)) {
             this.resetDiskPosition(disk);
@@ -148,8 +148,8 @@ export class Hanoi {
 
     resetDiskPosition(disk: Disk) {
         disk.element.style.transform = `none`;
-        this.element.setAttribute(OFFSET_X_ATTR, '0');
-        this.element.setAttribute(OFFSET_Y_ATTR, '0');
+        disk.element.setAttribute(OFFSET_X_ATTR, '0');
+        disk.element.setAttribute(OFFSET_Y_ATTR, '0');
     }
 
     positionDisk(disk: Disk, pin: Pin) {
@@ -252,9 +252,9 @@ export class Hanoi {
         } else {
             diskOffset = (this.sectionWidth - DISK_MIN_SIZE) / this.numberOfDisks;
             if (diskOffset >= DESIRED_MIN_OFFSET) {
-            return diskOffset;
+                return diskOffset;
             } else {
-            return EXTRA_SMALL_OFFSET;
+                return EXTRA_SMALL_OFFSET;
             }
         } 
     }
@@ -332,5 +332,44 @@ export class Hanoi {
             this.diskCountService.setNumberOfDisks(this.numberOfDisks);
             this.restart();
         }
+    }
+
+    simulate() {
+        this.simulationCount = 1; // will delay
+        this.restart();
+        this.hanoi(0, 0, 2, 1);
+    }
+
+    simulationCount = 0;
+    hanoi(diskIndex: number, fromIndex: number, toIndex: number, throughIndex: number) {
+        if (diskIndex < this.numberOfDisks) {
+            this.hanoi(diskIndex + 1, fromIndex, throughIndex, toIndex);
+            setTimeout(() => {
+                let disk = this.disks[diskIndex];
+                let toPin = this.findPinByIndex(toIndex);
+                disk.centerX = toPin.centerX;
+                disk.centerY = toPin.centerY;
+                this.updateDiskPin(disk);
+                if (this.isGameOver()) {
+                    this.component.simulating = false;
+                }
+            }, this.simulationCount*500);
+            this.simulationCount++;
+            this.hanoi(diskIndex + 1, throughIndex, toIndex, fromIndex);
+        }
+    }
+
+    sleep(delay) {
+        var start = new Date().getTime();
+        while (new Date().getTime() < start + delay);
+    }
+
+    findPinByIndex(index: number): Pin {
+        if (index === 0) {
+            return this.pinA;
+        } else if (index === 1) {
+            return this.pinB;
+        }
+        return this.pinC;
     }
 }
